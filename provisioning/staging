@@ -1,0 +1,3 @@
+[msready]
+#10.0.0.2    ansible_user=labuser    ansible_user=labuser    ansible_ssh_private_key_file=/home/radim/.ssh/id_rsa
+10.0.0.2    ansible_user=labuser    ansible_user=labuser
