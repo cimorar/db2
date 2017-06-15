@@ -5,8 +5,4 @@
   become: yes
 
   roles:
-    - common
-    - mariadb
-    - nginx
-    - php-fpm
-    - wordpress
+    - sfromm.mariadb

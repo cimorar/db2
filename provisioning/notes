@@ -1,0 +1,2 @@
+ansible-playbook -i staging ./site.yml --vault-password-file ./.vault_pass.txt
+ansible-playbook -i staging ./site.yml --vault-password-file ./.vault_pass.txt --syntax-check
