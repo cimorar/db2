@@ -1,11 +1,11 @@
 ---
-wp_version: 4.0
+wp_version: 4.7.5
 # TODO: https://wordpress.org/download/release-archive/
-# wp_sha256sum: 8543e31d7c0a1b15f73dbb20f9161845f3d2bb8de3d7aef371cf32bba41747ee
+wp_checksum: sha1:fbe0ee1d9010265be200fe50b86f341587187302
 wp_install_dir: '/var/sites/awesome_wordpress_site'
-wp_db_name: 'database_name_here'
-wp_db_user: 'username_here'
-wp_db_password: 'password_here'
+#wp_db_name: "{{ wp_db_name }}"
+#wp_db_user: "{{ wp_db_user }}"
+#wp_db_password: "{{ wp_db_password }}"
 wp_db_host: 'localhost'
 wp_db_charset: 'utf8'
 wp_db_collate: ''

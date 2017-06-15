@@ -6,5 +6,10 @@
 
   roles:
     - sfromm.mariadb
-    - RobertoSolis.apache
-    - nbz4live.php-fpm
+    - geerlingguy.apache
+    - geerlingguy.php
+    - geerlingguy.apache-php-fpm
+    - geerlingguy.php-mysql
+    - darthwade.wordpress
+    
+

@@ -3,8 +3,11 @@
   file: path={{wp_install_dir|dirname}} state=directory
 
 - name: Wordpresss | Download {{wp_version}} to /tmp
-  get_url: url=http://wordpress.org/wordpress-{{wp_version}}.tar.gz force=no dest=/tmp/wordpress-{{wp_version}}.tar.gz
-  # TODO sha256sum="{{ wp_sha256sum }}"
+  get_url:
+    url: http://wordpress.org/wordpress-{{wp_version}}.tar.gz
+    force: no
+    dest: /tmp/wordpress-{{wp_version}}.tar.gz
+    checksum: "{{ wp_checksum }}"
 
 - name: Wordpresss | Extract archive
   unarchive: src=/tmp/wordpress-{{wp_version}}.tar.gz dest=/tmp copy=no
@@ -15,16 +18,58 @@
 - name: Wordpresss | Remove wordpress-{{wp_version}}.tar.gz
   file: path=/tmp/wordpress-{{wp_version}}.tar.gz state=absent
 
-- name: Wordpresss | Fetch random salts for wp-config.php
-  local_action: command curl https://api.wordpress.org/secret-key/1.1/salt/
-  sudo: no
+#- name: Wordpresss | Fetch random salts for wp-config.php
+#  local_action: command
+#  args: curl https://api.wordpress.org/secret-key/1.1/salt/
+#  register: 'wp_salt'
+
+- name:  Wordpresss | Fetch random salts for wp-config.php
+  local_action:
+    module: uri
+    url: https://api.wordpress.org/secret-key/1.1/salt/
+    method: GET
+    return_content: no
   register: 'wp_salt'
+  delegate_to: localhost
 
 - name: Wordpresss | Copy wp-config.php file
   template: src=wp-config.php.j2 dest={{wp_install_dir}}/wp-config.php
 
+- name: Add group "wordpress"
+  group: name=wordpress
+
+- name: Add user "wordpress"
+  user: name=wordpress group=wordpress home={{wp_install_dir}} shell=/usr/sbin/nologin
+  
 - name: Wordpresss | Change ownership of installation directory
   file: path={{wp_install_dir}} owner=root group=root state=directory recurse=yes
 
 - name: Wordpresss | Change ownership of uploads directory
-  file: path={{wp_install_dir}}/wp-content/uploads/ owner=www-data group=www-data state=directory recurse=yes
+  file: path={{wp_install_dir}}/wp-content/uploads/ owner=wordpress group=wordpress state=directory recurse=yes
+
+- name: install SEManage
+  yum: pkg=policycoreutils-python state=present
+
+- name: set the SELinux policy for the Wordpress directory
+  command: semanage fcontext -a -t httpd_sys_content_t "{{wp_install_dir}}(/.*)?"
+
+- name: set the SELinux policy for wp-config.php
+  command: semanage fcontext -a -t httpd_sys_script_exec_t "{{wp_install_dir}}/wp-config\.php"
+
+- name: set the SELinux policy for wp-content directory
+  command: semanage fcontext -a -t httpd_sys_rw_content_t "{{wp_install_dir}}/wp-content(/.*)?"
+
+- name: set the SELinux policy for the *.php files
+  command: semanage fcontext -a -t httpd_sys_script_exec_t "{{wp_install_dir}}/.*\.php"
+
+- name: set the SELinux policy for the Upgrade directory
+  command: semanage fcontext -a -t httpd_sys_rw_content_t "{{wp_install_dir}}/wp-content/upgrade(/.*)?"
+
+- name: set the SELinux policy for the Uploads directory
+  command: semanage fcontext -a -t httpd_sys_rw_content_t "{{wp_install_dir}}/wp-content/uploads(/.*)?"
+
+- name: set the SELinux policy for the wp-includes php files
+  command: semanage fcontext -a -t httpd_sys_script_exec_t "{{wp_install_dir}}/wp-includes/.*\.php"
+
+- name: set the SELinux on all the Files
+  command: restorecon -Rv {{wp_install_dir}}

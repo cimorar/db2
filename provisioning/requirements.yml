@@ -1,5 +1,9 @@
 ---
 - src: sfromm.mariadb
-- src: RobertoSolis.apache
-- src: nbz4live.php-fpm
+#- src: RobertoSolis.apache
+#- src: nbz4live.php-fpm
 - src: darthwade.wordpress
+- src: geerlingguy.apache
+- src: geerlingguy.php
+- src: geerlingguy.apache-php-fpm
+- src: geerlingguy.php-mysql
